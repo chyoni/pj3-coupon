@@ -33,8 +33,9 @@ services:
     command: -f /mnt/locust/locustfile.py --master -H http://host.docker.internal:8080
 
   locust-worker:
-    container_name: pj3-coupon-locust-worker
     image: locustio/locust
+    depends_on:
+      - locust-master
     volumes:
       - ./locust/:/mnt/locust
     command: -f /mnt/locust/locustfile.py --worker --master-host locust-master
