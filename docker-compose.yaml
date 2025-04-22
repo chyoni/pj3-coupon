@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  mysql:
+    container_name: pj3-coupon-mysql
+    image: mysql:8.0.38
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - pj3-coupon
+
+  redis:
+    container_name: pj3-coupon-redis
+    image: redis:7.4
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - pj3-coupon
+
+  locust-master:
+    container_name: pj3-coupon-locust-master
+    image: locustio/locust
+    ports:
+      - "8089:8089"
+    volumes:
+      - ./locust/:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --master -H http://host.docker.internal:8080
+
+  locust-worker:
+    container_name: pj3-coupon-locust-worker
+    image: locustio/locust
+    volumes:
+      - ./locust/:/mnt/locust
+    command: -f /mnt/locust/locustfile.py --worker --master-host locust-master
+
+networks:
+  pj3-coupon:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  redis_data:
