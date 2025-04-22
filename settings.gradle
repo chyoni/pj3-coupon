@@ -1,0 +1,3 @@
+rootProject.name = 'pj3-coupon'
+
+include('coupon-core', "coupon-consumer", "coupon-api")
