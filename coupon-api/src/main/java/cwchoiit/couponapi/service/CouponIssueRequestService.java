@@ -12,9 +12,16 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CouponIssueRequestService {
     private final CouponIssueService couponIssueService;
+    private final DistributeLockExecutor distributeLockExecutor;
 
     public void requestIssue(CouponIssueRequest request) {
-        couponIssueService.issue(request.couponId(), request.userId());
+        distributeLockExecutor.execute(
+                "lock_%s".formatted(request.couponId()),
+                10000,
+                10000,
+                () -> couponIssueService.issue(request.couponId(), request.userId())
+        );
+
         log.info("[requestIssue] Coupon {} issued to user {}", request.couponId(), request.userId());
     }
 }

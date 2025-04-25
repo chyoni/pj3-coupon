@@ -45,7 +45,7 @@ public class CouponIssueService {
     }
 
     public Coupon findCoupon(Long couponId) {
-        return couponRepository.findLockedByCouponId(couponId)
+        return couponRepository.findById(couponId)
                 .orElseThrow(() -> COUPON_NOT_FOUND.build(couponId));
     }
 
