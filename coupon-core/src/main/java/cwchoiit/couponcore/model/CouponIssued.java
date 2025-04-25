@@ -30,4 +30,13 @@ public class CouponIssued extends BaseEntity {
     private LocalDateTime dateIssued;
 
     private LocalDateTime dateUsed;
+
+    public static CouponIssued of(Long couponId, Long userId) {
+        CouponIssued couponIssued = new CouponIssued();
+        couponIssued.couponId = couponId;
+        couponIssued.userId = userId;
+        couponIssued.dateIssued = LocalDateTime.now();
+        couponIssued.dateUsed = null;
+        return couponIssued;
+    }
 }
