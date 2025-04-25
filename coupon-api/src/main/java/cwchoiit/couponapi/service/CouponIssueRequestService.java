@@ -13,7 +13,9 @@ public class CouponIssueRequestService {
     private final CouponIssueService couponIssueService;
 
     public void requestIssue(CouponIssueRequest request) {
-        couponIssueService.issue(request.couponId(), request.userId());
+        synchronized (this) {
+            couponIssueService.issue(request.couponId(), request.userId());
+        }
         log.info("[requestIssue] Coupon {} issued to user {}", request.couponId(), request.userId());
     }
 }
