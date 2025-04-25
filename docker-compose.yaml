@@ -30,7 +30,7 @@ services:
       - "8089:8089"
     volumes:
       - ./locust/:/mnt/locust
-    command: -f /mnt/locust/locustfile.py --master -H http://host.docker.internal:8080
+    command: -f /mnt/locust/locustfile-issue.py --master -H http://host.docker.internal:8080
 
   locust-worker:
     image: locustio/locust
@@ -38,7 +38,7 @@ services:
       - locust-master
     volumes:
       - ./locust/:/mnt/locust
-    command: -f /mnt/locust/locustfile.py --worker --master-host locust-master
+    command: -f /mnt/locust/locustfile-issue.py --worker --master-host locust-master
 
 networks:
   pj3-coupon:
