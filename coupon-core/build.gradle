@@ -2,4 +2,7 @@ bootJar.enabled = false
 
 dependencies {
     implementation 'org.redisson:redisson-spring-boot-starter:3.37.0'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    testImplementation 'com.github.codemonstur:embedded-redis:1.4.3'
 }
