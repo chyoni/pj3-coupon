@@ -1,58 +1,87 @@
 package cwchoiit.couponcore.service;
 
+import cwchoiit.couponcore.component.DistributeLockExecutor;
 import cwchoiit.couponcore.model.Coupon;
-import cwchoiit.couponcore.model.CouponIssued;
-import cwchoiit.couponcore.repository.mysql.CouponIssuedQueryDslRepository;
-import cwchoiit.couponcore.repository.mysql.CouponIssuedRepository;
-import cwchoiit.couponcore.repository.mysql.CouponRepository;
+import cwchoiit.couponcore.repository.redis.RedisRepository;
+import cwchoiit.couponcore.service.response.CouponReadResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.time.LocalDateTime;
 
-import static cwchoiit.couponcore.exception.CouponCoreErrorCode.COUPON_NOT_FOUND;
-import static cwchoiit.couponcore.exception.CouponCoreErrorCode.DUPLICATED_COUPON_ISSUED;
+import static cwchoiit.couponcore.exception.CouponCoreErrorCode.*;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class CouponIssueService {
 
-    private final CouponRepository couponRepository;
-    private final CouponIssuedRepository couponIssuedRepository;
-    private final CouponIssuedQueryDslRepository couponIssuedQueryDslRepository;
+    private final RedisRepository redisRepository;
+    private final CouponService couponService;
+    private final DistributeLockExecutor distributeLockExecutor;
 
-    @Transactional
     public void issue(Long couponId, Long userId) {
-        Coupon coupon = findCoupon(couponId);
-        coupon.issue();
+        CouponReadResponse couponReadResponse = couponService.findCoupon(couponId);
+        Coupon coupon = Coupon.builder()
+                .couponId(couponReadResponse.getCouponId())
+                .title(couponReadResponse.getTitle())
+                .couponType(couponReadResponse.getCouponType())
+                .totalQuantity(couponReadResponse.getTotalQuantity())
+                .issuedQuantity(couponReadResponse.getIssuedQuantity())
+                .dateIssueStart(couponReadResponse.getDateIssueStart())
+                .dateIssueEnd(couponReadResponse.getDateIssueEnd())
+                .build();
 
-        saveCouponIssued(couponId, userId);
-    }
+        if (!coupon.availableIssueDate()) {
+            throw INVALID_COUPON_ISSUE_DATE.build(
+                    LocalDateTime.now(),
+                    coupon.getDateIssueStart(),
+                    coupon.getDateIssueEnd()
+            );
+        }
 
-    @Transactional
-    public CouponIssued saveCouponIssued(Long couponId, Long userId) {
-        checkAlreadyIssuance(couponId, userId);
-        return couponIssuedRepository.save(
-                CouponIssued.of(
-                        couponId,
-                        userId
-                )
+        distributeLockExecutor.execute(
+                "lock_%s".formatted(couponId),
+                3000,
+                3000,
+                () -> {
+                    if (!availableTotalIssueQuantity(couponId, coupon.getTotalQuantity())) {
+                        throw INVALID_COUPON_ISSUE_QUANTITY.build(
+                                redisRepository.sCard(generateKey(couponId)),
+                                coupon.getTotalQuantity()
+                        );
+                    }
+
+                    if (!availableUserIssueQuantity(couponId, userId)) {
+                        throw DUPLICATED_COUPON_ISSUED.build(couponId, userId);
+                    }
+
+                    redisRepository.sAdd(generateKey(couponId), String.valueOf(userId));
+                    redisRepository.rPush(generateQueueKey(couponId), String.valueOf(userId));
+                }
         );
     }
 
-    public Coupon findCoupon(Long couponId) {
-        return couponRepository.findById(couponId)
-                .orElseThrow(() -> COUPON_NOT_FOUND.build(couponId));
+    public boolean availableUserIssueQuantity(Long couponId, Long userId) {
+        return !redisRepository.sIsMember(
+                generateKey(couponId),
+                String.valueOf(userId)
+        );
     }
 
-    private void checkAlreadyIssuance(Long couponId, Long userId) {
-        Optional.ofNullable(couponIssuedQueryDslRepository.findCouponIssue(couponId, userId))
-                .ifPresent(alreadyIssued -> {
-                    throw DUPLICATED_COUPON_ISSUED.build(alreadyIssued.getCouponId(), alreadyIssued.getUserId());
-                });
+    public boolean availableTotalIssueQuantity(Long couponId, Integer totalQuantity) {
+        if (totalQuantity == null) {
+            return true;
+        }
+        return redisRepository.sCard(generateKey(couponId)) < totalQuantity;
+    }
+
+    private String generateKey(Long couponId) {
+        return "issue:request:couponId:%d".formatted(couponId);
+    }
+
+    private String generateQueueKey(Long couponId) {
+        return "issued:queue:couponId:%d".formatted(couponId);
     }
 }
