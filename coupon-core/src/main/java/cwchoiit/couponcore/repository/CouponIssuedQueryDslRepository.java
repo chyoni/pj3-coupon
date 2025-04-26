@@ -1,4 +1,4 @@
-package cwchoiit.couponcore.repository.mysql;
+package cwchoiit.couponcore.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;

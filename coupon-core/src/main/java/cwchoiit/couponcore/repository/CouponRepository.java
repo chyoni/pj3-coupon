@@ -1,4 +1,4 @@
-package cwchoiit.couponcore.repository.mysql;
+package cwchoiit.couponcore.repository;
 
 import cwchoiit.couponcore.model.Coupon;
 import org.springframework.data.jpa.repository.JpaRepository;
