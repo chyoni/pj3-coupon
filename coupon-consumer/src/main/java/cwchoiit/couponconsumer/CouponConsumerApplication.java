@@ -4,9 +4,11 @@ import cwchoiit.couponcore.CouponCoreConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
-@Import(CouponCoreConfiguration.class)
+@EnableScheduling
 @SpringBootApplication
+@Import(CouponCoreConfiguration.class)
 public class CouponConsumerApplication {
 
     public static void main(String[] args) {

@@ -1,6 +1,13 @@
 spring:
+  config:
+    activate:
+      on-profile: local
   application:
     name: coupon-consumer
 
 server:
   port: 8081
+
+logging:
+  level:
+    cwchoiit.couponconsumer: debug

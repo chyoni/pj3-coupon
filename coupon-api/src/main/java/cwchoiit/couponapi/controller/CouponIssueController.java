@@ -1,7 +1,7 @@
 package cwchoiit.couponapi.controller;
 
 import cwchoiit.couponapi.controller.response.ApiResponse;
-import cwchoiit.couponapi.service.CouponIssueRequestService;
+import cwchoiit.couponapi.service.CouponApiIssueRequestService;
 import cwchoiit.couponapi.service.request.CouponIssueRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/coupons/api")
 public class CouponIssueController {
 
-    private final CouponIssueRequestService couponIssueRequestService;
+    private final CouponApiIssueRequestService couponIssueRequestService;
 
     @PostMapping("/v1/issue")
     public ResponseEntity<ApiResponse<Void>> issueCoupon(@RequestBody CouponIssueRequest request) {
