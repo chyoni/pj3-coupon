@@ -46,15 +46,7 @@ public class CouponIssueService {
             );
         }
 
-        issueByScript(
-                couponId,
-                userId,
-                coupon.getTotalQuantity() == null ?
-                        Integer.MAX_VALUE :
-                        coupon.getTotalQuantity()
-        );
-
-        /*distributeLockExecutor.execute(
+        distributeLockExecutor.execute(
                 "lock_%s".formatted(couponId),
                 3000,
                 3000,
@@ -75,7 +67,7 @@ public class CouponIssueService {
                     redisTemplate.opsForList()
                             .rightPush(generateQueueKey(couponId), String.valueOf(userId));
                 }
-        );*/
+        );
     }
 
     public Boolean availableUserIssueQuantity(Long couponId, Long userId) {
