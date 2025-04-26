@@ -1,6 +1,6 @@
 package cwchoiit.couponcore.service;
 
-import cwchoiit.couponcore.repository.mysql.CouponRepository;
+import cwchoiit.couponcore.repository.CouponRepository;
 import cwchoiit.couponcore.service.response.CouponReadResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;

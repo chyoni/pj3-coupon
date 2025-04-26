@@ -5,7 +5,7 @@ import cwchoiit.couponcore.TestConfigurations;
 import cwchoiit.couponcore.exception.CouponCoreException;
 import cwchoiit.couponcore.model.Coupon;
 import cwchoiit.couponcore.model.CouponType;
-import cwchoiit.couponcore.repository.mysql.CouponRepository;
+import cwchoiit.couponcore.repository.CouponRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
