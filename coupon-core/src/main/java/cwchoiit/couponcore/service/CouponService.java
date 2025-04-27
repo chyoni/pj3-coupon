@@ -4,6 +4,8 @@ import cwchoiit.couponcore.model.Coupon;
 import cwchoiit.couponcore.repository.CouponRepository;
 import cwchoiit.couponcore.service.response.CouponReadResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.aop.framework.AopContext;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,11 +28,34 @@ public class CouponService {
                 .orElseThrow(() -> COUPON_NOT_FOUND.build(couponId));
     }
 
+    @Cacheable(cacheNames = "coupons", cacheManager = "localCacheManager")
+    public CouponReadResponse findCouponByLocalCache(Long couponId) {
+        return proxy().findCoupon(couponId);
+    }
+
+    @CachePut(cacheNames = "coupons")
+    public CouponReadResponse putCouponCache(Long couponId) {
+        return couponRepository.findById(couponId)
+                .map(CouponReadResponse::of)
+                .orElseThrow(() -> COUPON_NOT_FOUND.build(couponId));
+    }
+
+    @CachePut(cacheNames = "coupons", cacheManager = "localCacheManager")
+    public CouponReadResponse putCouponLocalCache(Long couponId) {
+        return couponRepository.findById(couponId)
+                .map(CouponReadResponse::of)
+                .orElseThrow(() -> COUPON_NOT_FOUND.build(couponId));
+    }
+
     public List<Coupon> findAll() {
         return couponRepository.findAll();
     }
 
     public Coupon findById(Long couponId) {
         return couponRepository.findById(couponId).orElseThrow(() -> COUPON_NOT_FOUND.build(couponId));
+    }
+
+    private CouponService proxy() {
+        return (CouponService) AopContext.currentProxy();
     }
 }

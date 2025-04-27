@@ -1,11 +1,13 @@
 package cwchoiit.couponcore.model;
 
 import cwchoiit.couponcore.exception.CouponCoreException;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -127,5 +129,44 @@ class CouponTest {
 
         assertThatThrownBy(coupon::issue).isInstanceOf(RuntimeException.class)
                 .hasFieldOrPropertyWithValue("code", "COUPON-C-0001");
+    }
+
+    @Test
+    @DisplayName("쿠폰 객체의 isIssueCompleted() 메서드 동작 확인 - 1")
+    void is_issue_completed() {
+        Coupon coupon = Coupon.builder()
+                .totalQuantity(100)
+                .issuedQuantity(0)
+                .dateIssueStart(LocalDateTime.now().minusDays(2))
+                .dateIssueEnd(LocalDateTime.now().minusDays(1))
+                .build();
+
+        assertThat(coupon.isIssueCompleted()).isTrue();
+    }
+
+    @Test
+    @DisplayName("쿠폰 객체의 isIssueCompleted() 메서드 동작 확인 - 2")
+    void is_issue_completed_2() {
+        Coupon coupon = Coupon.builder()
+                .totalQuantity(100)
+                .issuedQuantity(100)
+                .dateIssueStart(LocalDateTime.now().minusDays(2))
+                .dateIssueEnd(LocalDateTime.now().plusDays(1))
+                .build();
+
+        assertThat(coupon.isIssueCompleted()).isTrue();
+    }
+
+    @Test
+    @DisplayName("쿠폰 객체의 isIssueCompleted() 메서드 동작 확인 - 3")
+    void is_issue_completed_3() {
+        Coupon coupon = Coupon.builder()
+                .totalQuantity(100)
+                .issuedQuantity(0)
+                .dateIssueStart(LocalDateTime.now().minusDays(2))
+                .dateIssueEnd(LocalDateTime.now().plusDays(1))
+                .build();
+
+        assertThat(coupon.isIssueCompleted()).isFalse();
     }
 }

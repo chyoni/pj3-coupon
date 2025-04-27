@@ -28,7 +28,7 @@ public class CouponIssueRequestService {
     private final DistributeLockExecutor distributeLockExecutor;
 
     public void request(Long couponId, Long userId) {
-        CouponReadResponse couponReadResponse = couponService.findCoupon(couponId);
+        CouponReadResponse couponReadResponse = couponService.findCouponByLocalCache(couponId);
         Coupon coupon = Coupon.builder()
                 .couponId(couponReadResponse.getCouponId())
                 .title(couponReadResponse.getTitle())
@@ -38,6 +38,10 @@ public class CouponIssueRequestService {
                 .dateIssueStart(couponReadResponse.getDateIssueStart())
                 .dateIssueEnd(couponReadResponse.getDateIssueEnd())
                 .build();
+
+        if (!coupon.availableIssueQuantity()) {
+            throw INVALID_COUPON_ISSUE_QUANTITY.build(coupon.getIssuedQuantity(), coupon.getTotalQuantity());
+        }
 
         if (!coupon.availableIssueDate()) {
             throw INVALID_COUPON_ISSUE_DATE.build(

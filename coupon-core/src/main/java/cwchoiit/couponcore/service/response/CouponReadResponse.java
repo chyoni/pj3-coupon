@@ -16,6 +16,7 @@ public class CouponReadResponse {
     private CouponType couponType;
     private Integer totalQuantity;
     private int issuedQuantity;
+    private boolean availableIssueQuantity;
     private LocalDateTime dateIssueStart;
     private LocalDateTime dateIssueEnd;
 
@@ -26,6 +27,7 @@ public class CouponReadResponse {
         response.couponType = coupon.getCouponType();
         response.totalQuantity = coupon.getTotalQuantity();
         response.issuedQuantity = coupon.getIssuedQuantity();
+        response.availableIssueQuantity = coupon.availableIssueQuantity();
         response.dateIssueStart = coupon.getDateIssueStart();
         response.dateIssueEnd = coupon.getDateIssueEnd();
         return response;

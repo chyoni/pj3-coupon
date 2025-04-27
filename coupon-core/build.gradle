@@ -4,5 +4,6 @@ dependencies {
     implementation 'org.redisson:redisson-spring-boot-starter:3.37.0'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.github.ben-manes.caffeine:caffeine' // Redis에 캐싱 데이터 조회가 아닌 로컬 메모리에 올려두기 위한 의존성
     testImplementation 'com.github.codemonstur:embedded-redis:1.4.3'
 }

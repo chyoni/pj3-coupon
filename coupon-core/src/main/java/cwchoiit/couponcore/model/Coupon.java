@@ -66,4 +66,9 @@ public class Coupon extends BaseEntity {
         }
         issuedQuantity++;
     }
+
+    public boolean isIssueCompleted() {
+        LocalDateTime now = LocalDateTime.now();
+        return dateIssueEnd.isBefore(now) || !availableIssueQuantity();
+    }
 }
