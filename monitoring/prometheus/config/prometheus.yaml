@@ -4,9 +4,11 @@ global:
 scrape_configs:
   - job_name: "coupon-api"
     metrics_path: /actuator/prometheus
+    scheme: https
     static_configs:
-      - targets: [ 'https://www.cwchoiit.link' ]
+      - targets: [ 'www.cwchoiit.link:443' ]
   - job_name: "coupon-consumer"
     metrics_path: /actuator/prometheus
+    scheme: https
     static_configs:
-      - targets: [ 'https://consumer.cwchoiit.link' ]
+      - targets: [ 'consumer.cwchoiit.link:443' ]
