@@ -30,3 +30,24 @@ spring:
     redis:
       host: 127.0.0.1
       port: 63790
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:mysql://PROD_URL:3306/coupon
+    username: PROD_USER_NAME
+    password: PROD_PASSWORD
+    hikari:
+      max-lifetime: 30000
+      connection-timeout: 3000
+      maximum-pool-size: 10
+  jpa:
+    hibernate:
+      ddl-auto: none
+  data:
+    redis:
+      host: PROD_URL
+      port: 6379

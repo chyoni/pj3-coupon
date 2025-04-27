@@ -7,7 +7,11 @@ spring:
 
 server:
   port: 8081
-
-logging:
-  level:
-    cwchoiit.couponconsumer: debug
+management:
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
