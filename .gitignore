@@ -39,3 +39,6 @@ out/
 locust/__pycache__/
 
 *.http
+
+monitoring/grafana/volume
+monitoring/prometheus/volume
