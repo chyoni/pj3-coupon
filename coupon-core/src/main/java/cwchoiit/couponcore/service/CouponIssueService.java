@@ -1,10 +1,13 @@
 package cwchoiit.couponcore.service;
 
+import cwchoiit.couponcore.model.Coupon;
+import cwchoiit.couponcore.model.CouponIssueCompleteEvent;
 import cwchoiit.couponcore.model.CouponIssued;
 import cwchoiit.couponcore.repository.CouponIssuedQueryDslRepository;
 import cwchoiit.couponcore.repository.CouponIssuedRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,11 +24,15 @@ public class CouponIssueService {
     private final CouponService couponService;
     private final CouponIssuedRepository couponIssuedRepository;
     private final CouponIssuedQueryDslRepository couponIssuedQueryDslRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     public void issue(Long couponId, Long userId) {
-        couponService.findById(couponId).issue();
+        Coupon coupon = couponService.findById(couponId);
+        coupon.issue();
+
         saveCouponIssued(couponId, userId);
+        publishCouponEvent(coupon);
     }
 
     @Transactional
@@ -44,5 +51,11 @@ public class CouponIssueService {
                 .ifPresent(alreadyIssued -> {
                     throw DUPLICATED_COUPON_ISSUED.build(alreadyIssued.getCouponId(), alreadyIssued.getUserId());
                 });
+    }
+
+    private void publishCouponEvent(Coupon coupon) {
+        if (coupon.isIssueCompleted()) {
+            applicationEventPublisher.publishEvent(new CouponIssueCompleteEvent(coupon.getCouponId()));
+        }
     }
 }

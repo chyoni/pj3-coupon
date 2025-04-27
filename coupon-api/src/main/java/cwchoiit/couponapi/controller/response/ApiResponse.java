@@ -58,16 +58,16 @@ public class ApiResponse <T> {
 
     private void generateHttpStatus(String errorCode) {
         if ("COUPON-C-0001".equals(errorCode)) {
-            this.errorStatus = HttpStatus.NO_CONTENT;
+            this.errorStatus = HttpStatus.BAD_REQUEST;
         }
         if ("COUPON-C-0002".equals(errorCode)) {
-            this.errorStatus = HttpStatus.NO_CONTENT;
+            this.errorStatus = HttpStatus.BAD_REQUEST;
         }
         if ("COUPON-C-0003".equals(errorCode)) {
-            this.errorStatus = HttpStatus.NO_CONTENT;
+            this.errorStatus = HttpStatus.BAD_REQUEST;
         }
         if ("COUPON-C-0004".equals(errorCode)) {
-            this.errorStatus = HttpStatus.NO_CONTENT;
+            this.errorStatus = HttpStatus.NOT_FOUND;
         }
     }
 }
