@@ -1,13 +1,13 @@
-package cwchoiit.couponapi.controller;
+package cwchoiit.couponconsumer.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class HelloController {
+public class HealthzController {
 
-    @GetMapping("/hello")
+    @GetMapping("/healthz")
     public String hello() {
-        return "Hello World!";
+        return "Health Checking";
     }
 }
